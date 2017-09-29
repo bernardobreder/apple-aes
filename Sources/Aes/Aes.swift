@@ -239,8 +239,9 @@ public class AESCipher: AESBase {
         func convertExpandedKey(_ expanded: Array<UInt8>) -> Array<Array<UInt32>> {
             var arr = Array<UInt32>()
             for idx in stride(from: expanded.startIndex, to: expanded.endIndex, by: 4) {
-                let four = Array(expanded[idx..<idx.advanced(by: 4)].reversed())
-                let num = UInt32(bytes: four)
+                let four: [UInt8] = Array(expanded[idx..<idx.advanced(by: 4)].reversed())
+                let num = four.toInteger()
+                
                 arr.append(num)
             }
             
@@ -276,7 +277,7 @@ public class AESCipher: AESBase {
                 tmp[wordIdx] = w[4*(i-1)+wordIdx]
             }
             if (i % 8) == 0 {
-                tmp = subWord(rotateLeft(UInt32(bytes: tmp), by: 8).bytes(totalBytes: MemoryLayout<UInt32>.size))
+                tmp = subWord(arrayOfBytes(value: rotateLeft(tmp.toInteger(), by: 8), length: MemoryLayout<UInt32>.size))
                 tmp[0] = tmp.first! ^ AESCipher.Rcon[i/8]
             } else if 8 > 6 && (i % 8) == 4 {
                 tmp = subWord(tmp)
@@ -414,27 +415,6 @@ private struct PKCS7 {
     
 }
 
-fileprivate protocol BitshiftOperationsType {
-    static func << (lhs: Self, rhs: Self) -> Self
-}
-
-fileprivate protocol ByteConvertible {
-    init(_ value: UInt8)
-    init(truncatingBitPattern: UInt64)
-}
-
-extension UInt32 : BitshiftOperationsType, ByteConvertible { }
-
-fileprivate extension UInt32 {
-    init<T: Collection>(bytes: T) where T.Iterator.Element == UInt8, T.Index == Int {
-        self = bytes.toInteger()
-    }
-    
-    func bytes(totalBytes: Int = MemoryLayout<UInt32>.size) -> Array<UInt8> {
-        return arrayOfBytes(value: self, length: totalBytes)
-    }
-}
-
 fileprivate func arrayOfBytes<T>(value: T, length: Int? = nil) -> Array<UInt8> {
     let totalBytes = length ?? MemoryLayout<T>.size
     
@@ -454,26 +434,26 @@ fileprivate func arrayOfBytes<T>(value: T, length: Int? = nil) -> Array<UInt8> {
 }
 
 fileprivate extension Collection where Self.Iterator.Element == UInt8, Self.Index == Int {
-    func toInteger<T: BinaryInteger>() -> T where T: ByteConvertible, T: BitshiftOperationsType {
+    func toInteger() -> UInt32 {
         if self.isEmpty {
             return 0
         }
         
         var bytes = self.reversed()
-        if bytes.count < MemoryLayout<T>.size {
-            let paddingCount = MemoryLayout<T>.size - bytes.count
+        if bytes.count < MemoryLayout<UInt32>.size {
+            let paddingCount = MemoryLayout<UInt32>.size - bytes.count
             if paddingCount > 0 {
                 bytes += Array<UInt8>(repeating: 0, count: paddingCount)
             }
         }
         
-        if MemoryLayout<T>.size == 1 {
-            return T(truncatingBitPattern: UInt64(bytes[0]))
+        if MemoryLayout<UInt32>.size == 1 {
+            return UInt32(truncatingIfNeeded: UInt64(bytes[0]))
         }
         
-        var result: T = 0
+        var result: UInt32 = 0
         for byte in bytes.reversed() {
-            result = result << 8 | T(byte)
+            result = result << 8 | UInt32(byte)
         }
         return result
     }

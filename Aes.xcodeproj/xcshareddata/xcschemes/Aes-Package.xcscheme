@@ -14,10 +14,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "apple-aes::apple-aes"
-               BuildableName = "apple_aes.framework"
-               BlueprintName = "apple-aes"
-               ReferencedContainer = "container:apple-aes.xcodeproj">
+               BlueprintIdentifier = "Aes::Aes"
+               BuildableName = "Aes.framework"
+               BlueprintName = "Aes"
+               ReferencedContainer = "container:Aes.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "Random::Random"
+               BuildableName = "Random.framework"
+               BlueprintName = "Random"
+               ReferencedContainer = "container:Aes.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,10 +47,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "apple-aes::apple-aesTests"
-               BuildableName = "apple-aesTests.xctest"
-               BlueprintName = "apple-aesTests"
-               ReferencedContainer = "container:apple-aes.xcodeproj">
+               BlueprintIdentifier = "Aes::AesTests"
+               BuildableName = "AesTests.xctest"
+               BlueprintName = "AesTests"
+               ReferencedContainer = "container:Aes.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,10 +71,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "apple-aes::apple-aes"
-            BuildableName = "apple_aes.framework"
-            BlueprintName = "apple-aes"
-            ReferencedContainer = "container:apple-aes.xcodeproj">
+            BlueprintIdentifier = "Aes::Aes"
+            BuildableName = "Aes.framework"
+            BlueprintName = "Aes"
+            ReferencedContainer = "container:Aes.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
