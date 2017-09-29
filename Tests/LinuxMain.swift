@@ -1,25 +1,6 @@
-//
-//  AesTests.swift
-//  Aes
-//
-//  Created by Bernardo Breder.
-//
-//
-
 import XCTest
-@testable import AesTests
-
-extension AesTests {
-
-	static var allTests : [(String, (AesTests) -> () throws -> Void)] {
-		return [
-			("test", test),
-		]
-	}
-
-}
+@testable import apple_aesTests
 
 XCTMain([
-	testCase(AesTests.allTests),
+    testCase(apple_aesTests.allTests),
 ])
-

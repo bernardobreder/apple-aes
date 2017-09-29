@@ -33,7 +33,7 @@ public class AESCipher: AESBase {
     
     public convenience init?(key: String) {
         guard let data: Data = key.data(using: .utf8) else { return nil }
-        let iv = SecureRandom.randomText(AESBase.blockSize)
+        let iv = Random.randomText(AESBase.blockSize)
         guard let ivData = iv.data(using: String.Encoding.utf8) else { return nil }
         self.init(key: data, iv: ivData)
     }
@@ -167,28 +167,28 @@ public class AESCipher: AESBase {
         
         // rounds
         
-        let lb00 = sBoxInv[Int(B0(t[0]))]
-        let lb01 = (sBoxInv[Int(B1(t[3]))] << 8)
-        let lb02 = (sBoxInv[Int(B2(t[2]))] << 16)
-        let lb03 = (sBoxInv[Int(B3(t[1]))] << 24)
+        let lb00: UInt32 = sBoxInv[Int(B0(t[0]))]
+        let lb01: UInt32 = (sBoxInv[Int(B1(t[3]))] << 8)
+        let lb02: UInt32 = (sBoxInv[Int(B2(t[2]))] << 16)
+        let lb03: UInt32 = (sBoxInv[Int(B3(t[1]))] << 24)
         b[0] = lb00 | lb01 | lb02 | lb03 ^ rk[0][0]
         
-        let lb10 = sBoxInv[Int(B0(t[1]))]
-        let lb11 = (sBoxInv[Int(B1(t[0]))] << 8)
-        let lb12 = (sBoxInv[Int(B2(t[3]))] << 16)
-        let lb13 = (sBoxInv[Int(B3(t[2]))] << 24)
+        let lb10: UInt32 = sBoxInv[Int(B0(t[1]))]
+        let lb11: UInt32 = (sBoxInv[Int(B1(t[0]))] << 8)
+        let lb12: UInt32 = (sBoxInv[Int(B2(t[3]))] << 16)
+        let lb13: UInt32 = (sBoxInv[Int(B3(t[2]))] << 24)
         b[1] = lb10 | lb11 | lb12 | lb13 ^ rk[0][1]
         
-        let lb20 = sBoxInv[Int(B0(t[2]))]
-        let lb21 = (sBoxInv[Int(B1(t[1]))] << 8)
-        let lb22 = (sBoxInv[Int(B2(t[0]))] << 16)
-        let lb23 = (sBoxInv[Int(B3(t[3]))] << 24)
+        let lb20: UInt32 = sBoxInv[Int(B0(t[2]))]
+        let lb21: UInt32 = (sBoxInv[Int(B1(t[1]))] << 8)
+        let lb22: UInt32 = (sBoxInv[Int(B2(t[0]))] << 16)
+        let lb23: UInt32 = (sBoxInv[Int(B3(t[3]))] << 24)
         b[2] = lb20 | lb21 | lb22 | lb23 ^ rk[0][2]
         
-        let lb30 = sBoxInv[Int(B0(t[3]))]
-        let lb31 = (sBoxInv[Int(B1(t[2]))] << 8)
+        let lb30: UInt32 = sBoxInv[Int(B0(t[3]))]
+        let lb31: UInt32 = (sBoxInv[Int(B1(t[2]))] << 8)
         let lb32 = (sBoxInv[Int(B2(t[1]))] << 16)
-        let lb33 = (sBoxInv[Int(B3(t[0]))] << 24)
+        let lb33: UInt32 = (sBoxInv[Int(B3(t[0]))] << 24)
         b[3] = lb30 | lb31 | lb32 | lb33 ^ rk[0][3]
         
         var out = [UInt8]()
@@ -221,15 +221,15 @@ public class AESCipher: AESBase {
     fileprivate func expandKeyInv(_ key: Key) -> Array<Array<UInt32>> {
         var rk2: Array<Array<UInt32>> = expandKey(key)
         for r in 1 ..< AESBase.rounds {
-            var w: UInt32
-            w = rk2[r][0]
-            rk2[r][0] = AESCipher.U1[Int(B0(w))] ^ AESCipher.U2[Int(B1(w))] ^ AESCipher.U3[Int(B2(w))] ^ AESCipher.U4[Int(B3(w))]
-            w = rk2[r][1]
-            rk2[r][1] = AESCipher.U1[Int(B0(w))] ^ AESCipher.U2[Int(B1(w))] ^ AESCipher.U3[Int(B2(w))] ^ AESCipher.U4[Int(B3(w))]
-            w = rk2[r][2]
-            rk2[r][2] = AESCipher.U1[Int(B0(w))] ^ AESCipher.U2[Int(B1(w))] ^ AESCipher.U3[Int(B2(w))] ^ AESCipher.U4[Int(B3(w))]
-            w = rk2[r][3]
-            rk2[r][3] = AESCipher.U1[Int(B0(w))] ^ AESCipher.U2[Int(B1(w))] ^ AESCipher.U3[Int(B2(w))] ^ AESCipher.U4[Int(B3(w))]
+            var w: UInt32, a: UInt32, b: UInt32, c: UInt32, d: UInt32
+            for i in 0 ..< 4 {
+                w = rk2[r][i]
+                a = AESCipher.U1[Int(B0(w))]
+                b = AESCipher.U2[Int(B1(w))]
+                c = AESCipher.U3[Int(B2(w))]
+                d = AESCipher.U4[Int(B3(w))]
+                rk2[r][i] = a ^ b ^ c ^ d
+            }
         }
         return rk2
     }
@@ -329,7 +329,7 @@ extension AESCipher {
         var p: UInt8 = 1, q: UInt8 = 1
         
         repeat {
-            p = p ^ (UInt8(truncatingBitPattern: Int(p) << 1) ^ ((p & 0x80) == 0x80 ? 0x1B : 0))
+            p = p ^ (UInt8(truncatingIfNeeded: Int(p) << 1) ^ ((p & 0x80) == 0x80 ? 0x1B : 0))
             q ^= q << 1
             q ^= q << 2
             q ^= q << 4
@@ -454,7 +454,7 @@ fileprivate func arrayOfBytes<T>(value: T, length: Int? = nil) -> Array<UInt8> {
 }
 
 fileprivate extension Collection where Self.Iterator.Element == UInt8, Self.Index == Int {
-    func toInteger<T: Integer>() -> T where T: ByteConvertible, T: BitshiftOperationsType {
+    func toInteger<T: BinaryInteger>() -> T where T: ByteConvertible, T: BitshiftOperationsType {
         if self.isEmpty {
             return 0
         }
@@ -482,10 +482,10 @@ fileprivate extension Collection where Self.Iterator.Element == UInt8, Self.Inde
 fileprivate extension Array {
     
     func chunks() -> Array<Array<Element>> {
-        let blockSize = AESBase.blockSize
+        let blockSize: Int = AESBase.blockSize
         var words = Array<Array<Element>>()
         words.reserveCapacity(self.count / blockSize)
-        for idx in stride(from: blockSize, through: self.count, by: blockSize) {
+        for idx: Int in stride(from: blockSize, through: self.count, by: blockSize) {
             words.append(Array(self[idx - blockSize..<idx]))
         }
         let reminder = self.suffix(self.count % blockSize)

@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Random",
+        "repositoryURL": "https://github.com/bernardobreder/apple-random.git",
+        "state": {
+          "branch": "master",
+          "revision": "a7ea66aee9b1e2d39ae51ed9b2cef49e3710936b",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
